@@ -1,3 +1,11 @@
 #!/usr/bin/env bash
-# Demonstrate failure on re-run
-( set +e; ./pipeline.sh >/dev/null 2>&1; rc1=$?; sleep 1 ./pipeline.sh >/dev/null 2>&1; rc2=$?; [ $rc1 -eq 0 ] && [ $rc2 -ne 0 ] ) && echo "✅ PASS" || { echo "❌ FAIL"; exit 1; }
+output1=$(./pipeline.sh secret-branch)
+rc1=$?
+output2=$(./pipeline.sh secret-branch)
+rc2=$?
+files=$(ls workspace)
+if [ $rc1 -eq 0 ] && [ $rc2 -eq 0 ] && [ "$files" == "super.secret.md" ] && [ "$output2" == "super.secret.md" ]; then
+  echo "✅ PASS"
+else
+  echo "❌ FAIL"
+fi
